@@ -1,0 +1,14 @@
+# Synapse Services Configuration
+# Copy to services.yaml and customize
+#
+# Format:
+#   services:
+#     - name:
+#         repo: repository URL (required)
+#         path: local path (optional, defaults to services/name)
+#         env: environment variables (optional)
+
+services:
+  # Synapse server - AI inference gateway (LLM, MCP, STT, TTS)
+  - synapse-server:
+      repo: git@github.com:omnidotdev/synapse-server#master
