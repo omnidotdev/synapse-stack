@@ -42,7 +42,7 @@ config = os.path.abspath("config/synapse.dev.toml") if os.path.exists("config/sy
 
 if os.path.exists(server_path):
     local_resource(
-        "build-synapse",
+        "build-synapse-server",
         cmd="cargo build -p synapse",
         dir=server_path,
         deps=[
@@ -50,7 +50,7 @@ if os.path.exists(server_path):
             "%s/crates" % server_path,
             "%s/Cargo.toml" % server_path,
         ],
-        labels=["synapse"],
+        labels=["synapse-server"],
     )
 
     serve_cmd = "cargo run -p synapse"
@@ -58,10 +58,10 @@ if os.path.exists(server_path):
         serve_cmd = "%s -- --config %s" % (serve_cmd, config)
 
     local_resource(
-        "dev-synapse",
+        "dev-synapse-server",
         serve_cmd=serve_cmd,
         serve_dir=server_path,
-        resource_deps=["build-synapse"],
+        resource_deps=["build-synapse-server"],
         readiness_probe=probe(
             http_get=http_get_action(
                 path="/health",
@@ -70,7 +70,7 @@ if os.path.exists(server_path):
             initial_delay_secs=5,
             period_secs=5,
         ),
-        labels=["synapse"],
+        labels=["synapse-server"],
     )
 else:
     print(color.yellow("synapse-server not found - run services bootstrap first"))
