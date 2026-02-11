@@ -15,6 +15,3 @@ services:
   # Synapse dashboard - billing and usage management UI
   - synapse-dashboard:
       repo: git@github.com:omnidotdev/synapse-dashboard#master
-  # Synapse API - GraphQL API for dashboard and platform integration
-  - synapse-api:
-      repo: git@github.com:omnidotdev/synapse-api#master
