@@ -74,3 +74,14 @@ if os.path.exists(server_path):
     )
 else:
     print(color.yellow("synapse-server not found - run services bootstrap first"))
+
+# ------------------------------------
+# Synapse dashboard
+# ------------------------------------
+dashboard_path = "services/synapse-dashboard"
+
+if os.path.exists(dashboard_path):
+    if os.path.exists("%s/Tiltfile" % dashboard_path):
+        include(os.path.join(dashboard_path, "Tiltfile"))
+else:
+    print(color.yellow("synapse-dashboard not found - run services bootstrap first"))

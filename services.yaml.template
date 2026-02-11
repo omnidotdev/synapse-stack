@@ -12,3 +12,6 @@ services:
   # Synapse server - AI inference gateway (LLM, MCP, STT, TTS)
   - synapse-server:
       repo: git@github.com:omnidotdev/synapse-server#master
+  # Synapse dashboard - billing and usage management UI
+  - synapse-dashboard:
+      repo: git@github.com:omnidotdev/synapse-dashboard#master
