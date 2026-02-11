@@ -85,3 +85,14 @@ if os.path.exists(dashboard_path):
         include(os.path.join(dashboard_path, "Tiltfile"))
 else:
     print(color.yellow("synapse-dashboard not found - run services bootstrap first"))
+
+# ------------------------------------
+# Synapse API
+# ------------------------------------
+api_path = "services/synapse-api"
+
+if os.path.exists(api_path):
+    if os.path.exists("%s/Tiltfile" % api_path):
+        include(os.path.join(api_path, "Tiltfile"))
+else:
+    print(color.yellow("synapse-api not found - run services bootstrap first"))
