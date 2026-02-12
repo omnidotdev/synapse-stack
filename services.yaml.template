@@ -9,9 +9,12 @@
 #         env: environment variables (optional)
 
 services:
-  # Synapse server - AI inference gateway (LLM, MCP, STT, TTS)
-  - synapse-server:
-      repo: git@github.com:omnidotdev/synapse-server#master
-  # Synapse dashboard - billing and usage management UI
-  - synapse-dashboard:
-      repo: git@github.com:omnidotdev/synapse-dashboard#master
+  # Synapse gateway - AI inference gateway (LLM, MCP, STT, TTS)
+  - synapse-gateway:
+      repo: git@github.com:omnidotdev/synapse-gateway#master
+  # Synapse API - GraphQL backend
+  - synapse-api:
+      repo: git@github.com:omnidotdev/synapse-api#master
+  # Synapse app - dashboard UI
+  - synapse-app:
+      repo: git@github.com:omnidotdev/synapse-app#master

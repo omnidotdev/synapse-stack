@@ -6,3 +6,8 @@
 !README.md
 !services.yaml.template
 !Tiltfile
+!config/
+!config/synapse.example.toml
+config/synapse.dev.toml
+!scripts/
+!scripts/**

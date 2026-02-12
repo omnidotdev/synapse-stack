@@ -35,22 +35,22 @@ for service in services:
         print(color.green("%s already exists" % path))
 
 # ------------------------------------
-# Synapse server
+# Synapse gateway
 # ------------------------------------
-server_path = "services/synapse-server"
+gateway_path = "services/synapse-gateway"
 config = os.path.abspath("config/synapse.dev.toml") if os.path.exists("config/synapse.dev.toml") else ""
 
-if os.path.exists(server_path):
+if os.path.exists(gateway_path):
     local_resource(
-        "build-synapse-server",
+        "build-synapse-gateway",
         cmd="cargo build -p synapse",
-        dir=server_path,
+        dir=gateway_path,
         deps=[
-            "%s/synapse/src" % server_path,
-            "%s/crates" % server_path,
-            "%s/Cargo.toml" % server_path,
+            "%s/synapse/src" % gateway_path,
+            "%s/crates" % gateway_path,
+            "%s/Cargo.toml" % gateway_path,
         ],
-        labels=["synapse-server"],
+        labels=["synapse-gateway"],
     )
 
     serve_cmd = "cargo run -p synapse"
@@ -58,10 +58,10 @@ if os.path.exists(server_path):
         serve_cmd = "%s -- --config %s" % (serve_cmd, config)
 
     local_resource(
-        "dev-synapse-server",
+        "dev-synapse-gateway",
         serve_cmd=serve_cmd,
-        serve_dir=server_path,
-        resource_deps=["build-synapse-server"],
+        serve_dir=gateway_path,
+        resource_deps=["build-synapse-gateway"],
         readiness_probe=probe(
             http_get=http_get_action(
                 path="/health",
@@ -70,18 +70,48 @@ if os.path.exists(server_path):
             initial_delay_secs=5,
             period_secs=5,
         ),
-        labels=["synapse-server"],
+        labels=["synapse-gateway"],
     )
 else:
-    print(color.yellow("synapse-server not found - run services bootstrap first"))
+    print(color.yellow("synapse-gateway not found - run services bootstrap first"))
 
 # ------------------------------------
-# Synapse dashboard
+# Synapse API
 # ------------------------------------
-dashboard_path = "services/synapse-dashboard"
+api_path = "services/synapse-api"
 
-if os.path.exists(dashboard_path):
-    if os.path.exists("%s/Tiltfile" % dashboard_path):
-        include(os.path.join(dashboard_path, "Tiltfile"))
+if os.path.exists(api_path):
+    local_resource(
+        "dev-synapse-api",
+        serve_cmd="bun dev",
+        serve_dir=api_path,
+        readiness_probe=probe(
+            http_get=http_get_action(
+                path="/health",
+                port=4000,
+            ),
+            initial_delay_secs=3,
+            period_secs=5,
+        ),
+        labels=["synapse-api"],
+    )
 else:
-    print(color.yellow("synapse-dashboard not found - run services bootstrap first"))
+    print(color.yellow("synapse-api not found - run services bootstrap first"))
+
+# ------------------------------------
+# Synapse app (dashboard)
+# ------------------------------------
+app_path = "services/synapse-app"
+
+if os.path.exists(app_path):
+    if os.path.exists("%s/Tiltfile" % app_path):
+        include(os.path.join(app_path, "Tiltfile"))
+    else:
+        local_resource(
+            "dev-synapse-app",
+            serve_cmd="bun dev",
+            serve_dir=app_path,
+            labels=["synapse-app"],
+        )
+else:
+    print(color.yellow("synapse-app not found - run services bootstrap first"))
