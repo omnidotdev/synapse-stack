@@ -82,9 +82,18 @@ api_path = "services/synapse-api"
 
 if os.path.exists(api_path):
     local_resource(
+        "install-synapse-api",
+        cmd="bun i",
+        dir=api_path,
+        deps=["%s/package.json" % api_path],
+        labels=["synapse-api"],
+    )
+
+    local_resource(
         "dev-synapse-api",
         serve_cmd="bun dev",
         serve_dir=api_path,
+        resource_deps=["install-synapse-api"],
         readiness_probe=probe(
             http_get=http_get_action(
                 path="/health",
