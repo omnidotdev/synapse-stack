@@ -25,8 +25,42 @@ services = read_yaml(config_path).get("services", [])
 for service in services:
     name = service.keys()[0]
     values = service.values()[0]
+
+    # Handle metarepos - auto-discover services in {path}/services/*/Tiltfile
+    if values.get("metarepo", False):
+        base_path = values.get("path", "services/%s" % name)
+        repo = values.get("repo")
+
+        # Expand ~ to home directory
+        if base_path.startswith("~"):
+            base_path = base_path.replace("~", os.environ["HOME"])
+
+        # Clone if repo specified and path doesn't exist
+        if repo and not os.path.exists(base_path):
+            print(color.yellow("%s does not exist, cloning..." % base_path))
+            git_checkout(repo, base_path)
+        elif os.path.exists(base_path):
+            print(color.green("%s already exists" % base_path))
+
+        # Auto-discover services using shell
+        services_dir = "%s/services" % base_path
+        if os.path.exists(services_dir):
+            sub_services = str(local("ls %s" % services_dir, quiet=True)).strip().split("\n")
+            for sub_service in sub_services:
+                if sub_service:
+                    sub_path = "%s/%s" % (services_dir, sub_service)
+                    tiltfile_path = "%s/Tiltfile" % sub_path
+                    if os.path.exists(tiltfile_path):
+                        print(color.green("     Loading Tiltfile for %s..." % sub_service))
+                        include(tiltfile_path)
+        continue
+
     repo = values.get("repo", "")
     path = values.get("path", "services/%s" % name)
+
+    # Expand ~ to home directory
+    if path.startswith("~"):
+        path = path.replace("~", os.environ["HOME"])
 
     if repo and not os.path.exists(path):
         print(color.yellow("%s does not exist, cloning..." % path))

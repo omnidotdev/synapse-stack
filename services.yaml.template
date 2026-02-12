@@ -6,15 +6,30 @@
 #     - name:
 #         repo: repository URL (required)
 #         path: local path (optional, defaults to services/name)
+#         metarepo: true if this is a metarepo with services/ subdirectory
 #         env: environment variables (optional)
 
 services:
+  # ----------------------------
+  # Platform dependencies (metarepos)
+  # ----------------------------
+  # HIDRA - Identity platform (includes gatekeeper for OAuth)
+  - hidra:
+      repo: git@github.com:omnidotdev/hidra-stack#master
+      path: ../hidra-stack
+      metarepo: true
+
+  # ----------------------------
+  # Synapse services
+  # ----------------------------
   # Synapse gateway - AI inference gateway (LLM, MCP, STT, TTS)
   - synapse-gateway:
       repo: git@github.com:omnidotdev/synapse-gateway#master
+
   # Synapse API - GraphQL backend
   - synapse-api:
       repo: git@github.com:omnidotdev/synapse-api#master
+
   # Synapse app - dashboard UI
   - synapse-app:
       repo: git@github.com:omnidotdev/synapse-app#master
