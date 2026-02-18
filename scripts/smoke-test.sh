@@ -138,7 +138,7 @@ API_RESOLVE_STATUS=$(curl -sk -o /tmp/synapse-smoke-resolve -w '%{http_code}' \
     -X POST \
     -H 'Content-Type: application/json' \
     -H "X-Gateway-Secret: ${GATEWAY_SECRET:-}" \
-    -d '{"key":"sk-syn-0000000000000000000000000000dead"}' \
+    -d '{"key":"synapse_0000000000000000000000000000dead"}' \
     "${API_URL}/internal/resolve-key" 2>/dev/null) || API_RESOLVE_STATUS="000"
 
 if [[ "$API_RESOLVE_STATUS" == "000" ]]; then
@@ -164,7 +164,7 @@ fi
 # Test 2: Gateway should reject a fake sk-syn- key with 401
 GATEWAY_AUTH_STATUS=$(curl -s -o /tmp/synapse-smoke-auth -w '%{http_code}' \
     -H 'Content-Type: application/json' \
-    -H 'Authorization: Bearer sk-syn-0000000000000000000000000000dead' \
+    -H 'Authorization: Bearer synapse_0000000000000000000000000000dead' \
     -d '{"model":"auto","messages":[{"role":"user","content":"test"}]}' \
     "${BASE}/v1/chat/completions" 2>/dev/null) || GATEWAY_AUTH_STATUS="000"
 
