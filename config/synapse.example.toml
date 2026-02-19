@@ -143,6 +143,23 @@ api_key = "{{ env.OPENAI_API_KEY }}"
 # api_key = "{{ env.ELEVENLABS_API_KEY }}"
 
 # ------------------------------------
+# MCP Tool Servers
+# ------------------------------------
+
+# Uncomment to enable web search via Brave:
+# [mcp.servers.brave_search.type]
+# transport = "stdio"
+# command = "npx"
+# args = ["-y", "@anthropic-ai/mcp-server-brave-search"]
+# env = { BRAVE_API_KEY = "{{ env.BRAVE_API_KEY }}" }
+
+# Uncomment to enable web fetch:
+# [mcp.servers.fetch.type]
+# transport = "stdio"
+# command = "npx"
+# args = ["-y", "@anthropic-ai/mcp-server-fetch"]
+
+# ------------------------------------
 # API Key Authentication
 # ------------------------------------
 
