@@ -1,0 +1,36 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "synapse.fullname" . }}-config
+  labels:
+    {{- include "synapse.labels" . | nindent 4 }}
+data:
+  synapse.toml: |
+    {{- if .Values.gateway.configOverride }}
+    {{- .Values.gateway.configOverride | nindent 4 }}
+    {{- else }}
+    [server]
+    listen_address = "0.0.0.0:{{ .Values.gateway.port }}"
+
+    [server.health]
+    enabled = true
+    path = "/health"
+
+    [auth]
+    enabled = true
+    api_url = "http://{{ include "synapse.fullname" . }}-api:{{ .Values.api.port }}"
+    gateway_secret = "{{ "{{" }} env.GATEWAY_SECRET {{ "}}" }}"
+    cache_ttl_seconds = 60
+    cache_capacity = 10000
+    public_paths = ["/health"]
+    {{- if .Values.gateway.billing.enabled }}
+
+    [billing]
+    enabled = true
+    aether_url = "{{ "{{" }} env.AETHER_URL {{ "}}" }}"
+    service_api_key = "{{ "{{" }} env.AETHER_SERVICE_API_KEY {{ "}}" }}"
+    app_id = "synapse"
+    mode = "hybrid"
+    fail_mode = "open"
+    {{- end }}
+    {{- end }}
