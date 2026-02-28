@@ -74,6 +74,24 @@ spec:
                   name: {{ include "synapse.fullname" . }}
                   key: brave-api-key
                   optional: true
+            {{- if .Values.gateway.providers.bedrock.enabled }}
+            - name: AWS_REGION
+              value: {{ .Values.gateway.providers.bedrock.region | default "us-east-1" | quote }}
+            {{- if .Values.gateway.providers.bedrock.accessKeyId }}
+            - name: AWS_ACCESS_KEY_ID
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "synapse.fullname" . }}
+                  key: aws-access-key-id
+            - name: AWS_SECRET_ACCESS_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "synapse.fullname" . }}
+                  key: aws-secret-access-key
+            {{- end }}
+            {{- end }}
+            - name: VALKEY_URL
+              value: {{ include "synapse.valkeyUrl" . | quote }}
             {{- if .Values.gateway.billing.enabled }}
             - name: AETHER_URL
               value: {{ .Values.gateway.billing.aetherUrl | quote }}

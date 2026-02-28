@@ -39,6 +39,17 @@ app.kubernetes.io/instance: {{ .Release.Name }}
 {{- end }}
 
 {{/*
+Valkey URL
+*/}}
+{{- define "synapse.valkeyUrl" -}}
+{{- if .Values.valkey.enabled -}}
+redis://{{ include "synapse.fullname" . }}-valkey:{{ .Values.valkey.port }}
+{{- else -}}
+{{ .Values.externalValkey.url }}
+{{- end -}}
+{{- end }}
+
+{{/*
 Database URL
 */}}
 {{- define "synapse.databaseUrl" -}}

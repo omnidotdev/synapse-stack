@@ -24,6 +24,11 @@ gateway:
     deepgram: ""
     elevenlabs: ""
     brave: ""
+    bedrock:
+      enabled: false
+      region: us-east-1
+      accessKeyId: ""
+      secretAccessKey: ""
   # Aether billing (optional, enables usage metering)
   billing:
     enabled: false
@@ -97,6 +102,27 @@ secrets:
   billingWebhookSecret: ""
   # HMAC secret for IDP webhook verification
   authWebhookSecret: ""
+
+# -- Valkey (distributed rate limiting + response cache)
+valkey:
+  enabled: true
+  image:
+    repository: valkey/valkey
+    tag: 8-alpine
+  port: 6379
+  resources:
+    requests:
+      cpu: 100m
+      memory: 128Mi
+    limits:
+      cpu: 500m
+      memory: 256Mi
+  persistence:
+    size: 1Gi
+
+# -- External Valkey (when valkey.enabled=false)
+externalValkey:
+  url: ""
 
 # -- PostgreSQL (Bitnami subchart)
 postgresql:

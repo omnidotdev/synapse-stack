@@ -18,12 +18,23 @@ services:
     ports:
       - "${DB_PORT:-5432}:5432"
 
+  valkey:
+    image: valkey/valkey:8-alpine
+    volumes:
+      - valkey_data:/data
+    healthcheck:
+      test: ["CMD", "valkey-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    ports:
+      - "${VALKEY_PORT:-6379}:6379"
+
   gateway:
     build: ./services/synapse-gateway
     environment:
       OPENAI_API_KEY: ${OPENAI_API_KEY:-}
       ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:-}
-      GOOGLE_API_KEY: ${GOOGLE_API_KEY:-}
       NVIDIA_API_KEY: ${NVIDIA_API_KEY:-}
       DEEPGRAM_API_KEY: ${DEEPGRAM_API_KEY:-}
       ELEVENLABS_API_KEY: ${ELEVENLABS_API_KEY:-}
@@ -31,10 +42,13 @@ services:
       GATEWAY_SECRET: ${GATEWAY_SECRET:?GATEWAY_SECRET is required}
       AETHER_URL: ${AETHER_URL:-}
       AETHER_SERVICE_API_KEY: ${AETHER_SERVICE_API_KEY:-}
+      VALKEY_URL: redis://valkey:6379
     volumes:
       - ./config/synapse.toml:/etc/synapse.toml:ro
     depends_on:
       api:
+        condition: service_healthy
+      valkey:
         condition: service_healthy
     ports:
       - "${GATEWAY_PORT:-6000}:3000"
@@ -96,3 +110,4 @@ services:
 
 volumes:
   db_data:
+  valkey_data:
