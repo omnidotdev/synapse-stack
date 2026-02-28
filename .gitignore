@@ -2,6 +2,8 @@
 *
 
 !.gitignore
+!.env.example
+!docker-compose.yml
 !LICENSE.md
 !README.md
 !services.yaml.template
@@ -11,3 +13,5 @@
 config/synapse.dev.toml
 !scripts/
 !scripts/**
+!charts/
+!charts/**
