@@ -1,0 +1,26 @@
+services:
+  # ----------------------------
+  # service-name:
+  #   repo: repository URL (required)
+  #   path: local path (optional, defaults to `services/service-name`; example: ../repo-path)
+  #   metarepo: true if this is a metarepo with services/ subdirectory
+  #   env: array of environment variables to set (optional); example:
+  #
+  #        env:
+  #          - TILT_CUSTOM_REPO_ENV_PATH: ../repo-path/.env.local
+  #
+  # ----------------------------
+
+  # Platform dependencies (metarepos)
+  - hidra:
+      repo: git@github.com:omnidotdev/hidra-stack#master
+      path: ../hidra-stack
+      metarepo: true
+
+  # Synapse services
+  - synapse:
+      repo: git@github.com:omnidotdev/synapse#master
+  - synapse-api:
+      repo: git@github.com:omnidotdev/synapse-api#master
+  - synapse-app:
+      repo: git@github.com:omnidotdev/synapse-app#master

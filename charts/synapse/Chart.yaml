@@ -1,0 +1,20 @@
+apiVersion: v2
+name: synapse
+description: AI router for unified LLM, MCP, STT, TTS, embeddings, and image generation
+type: application
+version: 0.1.0
+appVersion: "0.1.0"
+home: https://synapse.omni.dev
+sources:
+  - https://github.com/omnidotdev/synapse
+  - https://github.com/omnidotdev/synapse-api
+  - https://github.com/omnidotdev/synapse-app
+maintainers:
+  - name: Omni
+    url: https://omni.dev
+
+dependencies:
+  - name: postgresql
+    version: "16.4.7"
+    repository: https://charts.bitnami.com/bitnami
+    condition: postgresql.enabled
