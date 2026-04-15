@@ -1,0 +1,33 @@
+# Synapse Workspace
+# Unified AI inference router with intelligent routing, failover, and multi-modality
+
+workspace: .
+
+repositories:
+  # Synapse metarepo root
+  synapse-stack:
+    url: git@github.com:omnidotdev/synapse-stack.git
+    path: .
+    tags: [product, metarepo]
+    description: Unified AI inference router stack
+
+  # Synapse product services
+  synapse:
+    url: git@github.com:omnidotdev/synapse.git
+    path: ./services/synapse
+    tags: [product, backend-service, rust]
+    description: High-performance AI inference gateway
+
+  synapse-api:
+    url: git@github.com:omnidotdev/synapse-api.git
+    path: ./services/synapse-api
+    depends_on: [synapse]
+    tags: [product, backend]
+    description: Synapse GraphQL API
+
+  synapse-app:
+    url: git@github.com:omnidotdev/synapse-app.git
+    path: ./services/synapse-app
+    depends_on: [synapse-api]
+    tags: [product, frontend]
+    description: Synapse web dashboard

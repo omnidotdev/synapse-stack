@@ -1,0 +1,161 @@
+# Synapse Helm chart values
+
+# -- Gateway (AI router)
+gateway:
+  image:
+    repository: manifold.omni.dev/omni/synapse
+    tag: "0.1.0"
+    pullPolicy: IfNotPresent
+  replicas: 1
+  port: 3000
+  resources:
+    requests:
+      cpu: 250m
+      memory: 256Mi
+    limits:
+      cpu: "1"
+      memory: 512Mi
+  # Provider API keys
+  providers:
+    openai: ""
+    anthropic: ""
+    google: ""
+    nvidia: ""
+    deepgram: ""
+    elevenlabs: ""
+    brave: ""
+    bedrock:
+      enabled: false
+      region: us-east-1
+      accessKeyId: ""
+      secretAccessKey: ""
+  # Aether billing (optional, enables usage metering)
+  billing:
+    enabled: false
+    aetherUrl: ""
+    aetherServiceApiKey: ""
+  # -- Override auto-generated gateway TOML with a complete custom config.
+  # When set, this value is rendered directly as synapse.toml, replacing the
+  # auto-generated stub. Use --set-file gateway.configOverride=path/to/file.toml
+  configOverride: ""
+
+# -- API (GraphQL + PostGraphile)
+api:
+  image:
+    repository: manifold.omni.dev/omni/synapse-api
+    tag: "0.1.0"
+    pullPolicy: IfNotPresent
+  replicas: 1
+  port: 4000
+  resources:
+    requests:
+      cpu: 250m
+      memory: 256Mi
+    limits:
+      cpu: "1"
+      memory: 512Mi
+  corsAllowedOrigins: ""
+  # Set to false to disable JWT verification (self-hosted without Gatekeeper)
+  protectRoutes: true
+  auth:
+    baseUrl: ""
+  billing:
+    baseUrl: ""
+  authz:
+    apiUrl: ""
+    enabled: false
+
+# -- App (Dashboard)
+app:
+  image:
+    repository: manifold.omni.dev/omni/synapse-app
+    tag: "0.1.0"
+    pullPolicy: IfNotPresent
+  replicas: 1
+  port: 3000
+  resources:
+    requests:
+      cpu: 100m
+      memory: 128Mi
+    limits:
+      cpu: 500m
+      memory: 256Mi
+  baseUrl: ""
+  auth:
+    baseUrl: ""
+    internalUrl: ""
+    clientId: ""
+    clientSecret: ""
+  billing:
+    baseUrl: ""
+  authz:
+    apiUrl: ""
+    enabled: false
+
+# -- Secrets (required)
+secrets:
+  # Generate with: openssl rand -hex 32
+  authSecret: ""
+  gatewaySecret: ""
+  # Generate with: openssl rand -base64 32
+  encryptionKey: ""
+  # Aether service API key (shared by gateway + api + app)
+  aetherServiceApiKey: ""
+  # HMAC secret for billing webhook verification
+  billingWebhookSecret: ""
+  # HMAC secret for IDP webhook verification
+  authWebhookSecret: ""
+
+# -- Valkey (distributed rate limiting + response cache)
+valkey:
+  enabled: true
+  image:
+    repository: valkey/valkey
+    tag: 8-alpine
+  port: 6379
+  resources:
+    requests:
+      cpu: 100m
+      memory: 128Mi
+    limits:
+      cpu: 500m
+      memory: 256Mi
+  persistence:
+    size: 1Gi
+
+# -- External Valkey (when valkey.enabled=false)
+externalValkey:
+  url: ""
+
+# -- PostgreSQL (Bitnami subchart)
+postgresql:
+  enabled: true
+  auth:
+    database: synapse
+    username: postgres
+    # Generate with: openssl rand -hex 32
+    password: ""
+  primary:
+    persistence:
+      size: 10Gi
+
+# -- External database (when postgresql.enabled=false)
+externalDatabase:
+  host: ""
+  port: 5432
+  database: synapse
+  username: postgres
+  password: ""
+
+# -- Ingress
+ingress:
+  enabled: false
+  className: ""
+  annotations: {}
+  gateway:
+    host: gateway.synapse.example.com
+  api:
+    host: api.synapse.example.com
+  app:
+    host: synapse.example.com
+  tls: []
