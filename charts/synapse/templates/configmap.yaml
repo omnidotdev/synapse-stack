@@ -1,0 +1,99 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "synapse.fullname" . }}-config
+  labels:
+    {{- include "synapse.labels" . | nindent 4 }}
+data:
+  synapse.toml: |
+    {{- if .Values.gateway.configOverride }}
+    {{- .Values.gateway.configOverride | nindent 4 }}
+    {{- else }}
+    [server]
+    listen_address = "0.0.0.0:{{ .Values.gateway.port }}"
+
+    [server.health]
+    enabled = true
+    path = "/health"
+
+    [auth]
+    enabled = true
+    api_url = "http://{{ include "synapse.fullname" . }}-api:{{ .Values.api.port }}"
+    gateway_secret = "{{ "{{" }} env.GATEWAY_SECRET {{ "}}" }}"
+    cache_ttl_seconds = 60
+    cache_capacity = 10000
+    public_paths = ["/health"]
+    {{- if .Values.gateway.providers.openai }}
+
+    [llm.providers.openai]
+    type = "openai"
+    api_key = "{{ "{{" }} env.OPENAI_API_KEY {{ "}}" }}"
+    {{- end }}
+    {{- if .Values.gateway.providers.anthropic }}
+
+    [llm.providers.anthropic]
+    type = "anthropic"
+    api_key = "{{ "{{" }} env.ANTHROPIC_API_KEY {{ "}}" }}"
+    {{- end }}
+    {{- if .Values.gateway.providers.google }}
+
+    [llm.providers.google]
+    type = "google"
+    api_key = "{{ "{{" }} env.GOOGLE_API_KEY {{ "}}" }}"
+    {{- end }}
+    {{- if .Values.gateway.providers.nvidia }}
+
+    [llm.providers.nvidia]
+    type = "openai"
+    api_key = "{{ "{{" }} env.NVIDIA_API_KEY {{ "}}" }}"
+    base_url = "https://integrate.api.nvidia.com/v1"
+    {{- end }}
+
+    # Embeddings
+    {{- if .Values.gateway.providers.openai }}
+    [embeddings.providers.openai]
+    type = "openai"
+    api_key = "{{ "{{" }} env.OPENAI_API_KEY {{ "}}" }}"
+    {{- end }}
+
+    # Image Generation
+    {{- if .Values.gateway.providers.openai }}
+    [imagegen.providers.openai]
+    type = "openai"
+    api_key = "{{ "{{" }} env.OPENAI_API_KEY {{ "}}" }}"
+    {{- end }}
+
+    # Speech-to-Text
+    {{- if .Values.gateway.providers.openai }}
+    [stt.providers.whisper]
+    type = "whisper"
+    api_key = "{{ "{{" }} env.OPENAI_API_KEY {{ "}}" }}"
+    {{- end }}
+
+    # Text-to-Speech
+    {{- if .Values.gateway.providers.openai }}
+    [tts.providers.openai]
+    type = "openai_tts"
+    api_key = "{{ "{{" }} env.OPENAI_API_KEY {{ "}}" }}"
+    {{- end }}
+
+    # Rate Limiting
+    [server.rate_limit]
+    [server.rate_limit.storage]
+    type = "cache"
+    url = "{{ "{{" }} env.VALKEY_URL {{ "}}" }}"
+
+    [server.rate_limit.global]
+    requests = 1000
+    window = "1m"
+    {{- if .Values.gateway.billing.enabled }}
+
+    [billing]
+    enabled = true
+    aether_url = "{{ "{{" }} env.BILLING_URL {{ "}}" }}"
+    service_api_key = "{{ "{{" }} env.BILLING_SERVICE_API_KEY {{ "}}" }}"
+    app_id = "synapse"
+    mode = "hybrid"
+    fail_mode = "open"
+    {{- end }}
+    {{- end }}

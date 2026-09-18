@@ -1,0 +1,28 @@
+ingress:
+  enabled: true
+  className: nginx
+  gateway:
+    host: gateway.synapse.omni.dev
+  api:
+    host: api.synapse.omni.dev
+  app:
+    host: synapse.omni.dev
+  tls:
+    - secretName: synapse-tls
+      hosts: [synapse.omni.dev, api.synapse.omni.dev, gateway.synapse.omni.dev]
+
+api:
+  corsAllowedOrigins: "https://synapse.omni.dev"
+  auth:
+    baseUrl: "https://identity.omni.dev"
+
+app:
+  baseUrl: "https://synapse.omni.dev"
+  auth:
+    baseUrl: "https://identity.omni.dev"
+
+gateway:
+  billing:
+    enabled: true
+  # Use --set-file gateway.configOverride=config/synapse.prod.toml at deploy time
+  configOverride: ""

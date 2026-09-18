@@ -1,0 +1,22 @@
+# ignore all by default
+*
+
+!.gitignore
+!.env.local.template
+!README.md
+!LICENSE.md
+!services.yaml.template
+!Tiltfile
+!compose.yaml
+!weaver.yaml
+!renovate.json
+!.github/
+!.github/**
+!config/
+!config/synapse.example.toml
+!config/synapse.toml
+config/synapse.dev.toml
+!scripts/
+!scripts/**
+!charts/
+!charts/**

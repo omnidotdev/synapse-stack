@@ -1,0 +1,114 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "synapse.fullname" . }}-app
+  labels:
+    {{- include "synapse.labels" . | nindent 4 }}
+    app.kubernetes.io/component: app
+spec:
+  replicas: {{ .Values.app.replicas }}
+  selector:
+    matchLabels:
+      {{- include "synapse.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/component: app
+  template:
+    metadata:
+      labels:
+        {{- include "synapse.selectorLabels" . | nindent 8 }}
+        app.kubernetes.io/component: app
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.app.podSecurityContext }}
+      securityContext:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      containers:
+        - name: app
+          image: "{{ .Values.app.image.repository }}:{{ .Values.app.image.tag }}"
+          imagePullPolicy: {{ .Values.app.image.pullPolicy }}
+          {{- with .Values.app.securityContext }}
+          securityContext:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          ports:
+            - name: http
+              containerPort: {{ .Values.app.port }}
+              protocol: TCP
+          env:
+            - name: NODE_ENV
+              value: production
+            - name: AUTH_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "synapse.fullname" . }}
+                  key: auth-secret
+            {{- with .Values.app.baseUrl }}
+            - name: VITE_BASE_URL
+              value: {{ . | quote }}
+            {{- end }}
+            - name: VITE_API_BASE_URL
+              value: "http://{{ include "synapse.fullname" . }}-api:{{ .Values.api.port }}"
+            - name: SYNAPSE_API_URL
+              value: "http://{{ include "synapse.fullname" . }}-api:{{ .Values.api.port }}"
+            {{- with .Values.app.auth.baseUrl }}
+            - name: VITE_AUTH_BASE_URL
+              value: {{ . | quote }}
+            {{- end }}
+            {{- with .Values.app.auth.internalUrl }}
+            - name: AUTH_INTERNAL_URL
+              value: {{ . | quote }}
+            {{- end }}
+            {{- with .Values.app.auth.clientId }}
+            - name: AUTH_CLIENT_ID
+              value: {{ . | quote }}
+            {{- end }}
+            {{- if .Values.app.auth.clientSecret }}
+            - name: AUTH_CLIENT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "synapse.fullname" . }}
+                  key: auth-client-secret
+            {{- end }}
+            {{- with .Values.app.billing.baseUrl }}
+            - name: VITE_BILLING_BASE_URL
+              value: {{ . | quote }}
+            {{- end }}
+            {{- if .Values.secrets.aetherServiceApiKey }}
+            - name: BILLING_SERVICE_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "synapse.fullname" . }}
+                  key: aether-service-api-key
+            {{- end }}
+            {{- with .Values.app.authz.apiUrl }}
+            - name: VITE_AUTHZ_API_URL
+              value: {{ . | quote }}
+            {{- end }}
+            {{- if .Values.app.authz.enabled }}
+            - name: VITE_AUTHZ_ENABLED
+              value: "true"
+            {{- end }}
+          livenessProbe:
+            httpGet:
+              path: /api/health
+              port: http
+            initialDelaySeconds: 10
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /api/health
+              port: http
+            initialDelaySeconds: 5
+            periodSeconds: 5
+          resources:
+            {{- toYaml .Values.app.resources | nindent 12 }}
+          volumeMounts:
+            # Writable scratch space required because the root filesystem is read-only
+            - name: tmp
+              mountPath: /tmp
+      volumes:
+        - name: tmp
+          emptyDir: {}
