@@ -41,6 +41,9 @@ services:
       BRAVE_API_KEY: ${BRAVE_API_KEY:-}
       GOOGLE_API_KEY: ${GOOGLE_API_KEY:-}
       GATEWAY_SECRET: ${GATEWAY_SECRET:?GATEWAY_SECRET is required}
+      # Standardize onto BILLING_BASE_URL (fleet-wide name); BILLING_URL kept
+      # until the gateway image reads BILLING_BASE_URL, then remove it.
+      BILLING_BASE_URL: ${BILLING_BASE_URL:-}
       BILLING_URL: ${BILLING_URL:-}
       BILLING_SERVICE_API_KEY: ${BILLING_SERVICE_API_KEY:-}
       VALKEY_URL: redis://valkey:6379
