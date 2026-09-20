@@ -13,7 +13,7 @@ imagePullSecrets: []
 # -- Gateway (AI router)
 gateway:
   image:
-    repository: manifold.omni.dev/omni/synapse
+    repository: ghcr.io/omnidotdev/synapse
     tag: "0.1.0"
     pullPolicy: IfNotPresent
   replicas: 1
@@ -68,7 +68,7 @@ gateway:
 # -- API (GraphQL + PostGraphile)
 api:
   image:
-    repository: manifold.omni.dev/omni/synapse-api
+    repository: ghcr.io/omnidotdev/synapse-api
     tag: "0.1.0"
     pullPolicy: IfNotPresent
   replicas: 1
@@ -110,7 +110,7 @@ api:
 # -- App (Dashboard)
 app:
   image:
-    repository: manifold.omni.dev/omni/synapse-app
+    repository: ghcr.io/omnidotdev/synapse-app
     tag: "0.1.0"
     pullPolicy: IfNotPresent
   replicas: 1
