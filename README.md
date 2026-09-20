@@ -2,7 +2,7 @@
 
 # 🧠 Synapse
 
-[Website](https://synapse.omni.dev) | [Docs](https://docs.omni.dev/docs/grid/synapse) | [Feedback](https://github.com/omnidotdev/synapse-stack/issues) | [Discord](https://discord.gg/omnidotdev) | [X](https://x.com/omnidotdev) | [Threads](https://www.threads.com/@omnidotdev)
+[Website](https://synapse.omni.dev) | [Docs](https://docs.omni.dev/products/synapse) | [Feedback](https://github.com/omnidotdev/synapse-stack/issues) | [Discord](https://discord.gg/omnidotdev) | [X](https://x.com/omnidotdev) | [Threads](https://www.threads.com/@omnidotdev)
 
 </div>
 
@@ -59,10 +59,10 @@ Each service in `services.yaml` can specify:
 
 ## Self-Hosting
 
-Each service includes a Dockerfile. The provided `compose.yaml` builds and runs the full stack:
+Each service includes a Dockerfile. Copy `.env.local.template` to `.env.local` and fill in the required values, then build and run the full stack:
 
 ```sh
-docker compose up --build
+docker compose --env-file .env.local up --build
 ```
 
 See `.env.local.template` for all configuration options and `charts/synapse/` for the Helm chart.
