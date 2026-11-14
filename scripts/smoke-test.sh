@@ -103,6 +103,33 @@ check_optional "Generate image" "/v1/images/generations" POST \
     '{"model":"openai/dall-e-3","prompt":"A red circle on white background","size":"1024x1024","n":1}'
 
 echo
+echo "Image edits:"
+# Multipart edit with two reference images (1x1 PNG), as Creator sends it
+SMOKE_PNG=$(mktemp --suffix=.png)
+printf '%s' 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8DwHwAFBQIAX8jx0gAAAABJRU5ErkJggg==' \
+    | base64 -d > "$SMOKE_PNG"
+STATUS=$(curl -s -o /tmp/synapse-smoke-body -w '%{http_code}' -X POST \
+    -F 'model=openai/gpt-image-1-mini' \
+    -F 'prompt=A red circle in the style of the references' \
+    -F "image[]=@${SMOKE_PNG};type=image/png" \
+    -F "image[]=@${SMOKE_PNG};type=image/png" \
+    -F 'quality=low' \
+    -F 'size=1024x1024' \
+    -F 'n=1' \
+    "${BASE}/v1/images/edits" 2>/dev/null) || STATUS="000"
+rm -f "$SMOKE_PNG"
+if [[ "$STATUS" =~ ^2 ]] && grep -q 'b64_json' /tmp/synapse-smoke-body 2>/dev/null; then
+    green "  PASS  Edit image with references ($STATUS)"
+    PASS=$((PASS + 1))
+elif [[ "$STATUS" == "000" ]]; then
+    red "  FAIL  Image edit endpoint (connection refused)"
+    FAIL=$((FAIL + 1))
+else
+    yellow "  SKIP  Edit image with references ($STATUS) - provider may not be configured"
+    SKIP=$((SKIP + 1))
+fi
+
+echo
 echo "Speech-to-text:"
 # STT requires multipart, just check endpoint exists
 STATUS=$(curl -s -o /dev/null -w '%{http_code}' -X POST "${BASE}/v1/audio/transcriptions" 2>/dev/null) || STATUS="000"
