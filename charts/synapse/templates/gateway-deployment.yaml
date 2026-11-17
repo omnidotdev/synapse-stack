@@ -62,12 +62,6 @@ spec:
                   name: {{ include "synapse.fullname" . }}
                   key: google-api-key
                   optional: true
-            - name: NVIDIA_API_KEY
-              valueFrom:
-                secretKeyRef:
-                  name: {{ include "synapse.fullname" . }}
-                  key: nvidia-api-key
-                  optional: true
             - name: DEEPGRAM_API_KEY
               valueFrom:
                 secretKeyRef:
