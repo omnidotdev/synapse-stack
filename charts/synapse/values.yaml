@@ -46,7 +46,6 @@ gateway:
     openai: ""
     anthropic: ""
     google: ""
-    nvidia: ""
     deepgram: ""
     elevenlabs: ""
     brave: ""

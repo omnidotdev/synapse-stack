@@ -41,13 +41,6 @@ data:
     type = "google"
     api_key = "{{ "{{" }} env.GOOGLE_API_KEY {{ "}}" }}"
     {{- end }}
-    {{- if .Values.gateway.providers.nvidia }}
-
-    [llm.providers.nvidia]
-    type = "openai"
-    api_key = "{{ "{{" }} env.NVIDIA_API_KEY {{ "}}" }}"
-    base_url = "https://integrate.api.nvidia.com/v1"
-    {{- end }}
 
     # Embeddings
     {{- if .Values.gateway.providers.openai }}
